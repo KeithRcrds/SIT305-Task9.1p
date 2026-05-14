@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "lostfound.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public static final String TABLE_NAME = "items";
 
@@ -22,6 +22,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_LOCATION = "location";
     public static final String COL_IMAGE = "imageUri";
     public static final String COL_TIMESTAMP = "timestamp";
+    public static final String COL_LATITUDE = "latitude";
+    public static final String COL_LONGITUDE = "longitude";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -40,7 +42,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_DATE + " TEXT, "
                 + COL_LOCATION + " TEXT, "
                 + COL_IMAGE + " TEXT, "
-                + COL_TIMESTAMP + " TEXT"
+                + COL_TIMESTAMP + " TEXT, "
+                + COL_LATITUDE + " REAL, "
+                + COL_LONGITUDE + " REAL"
                 + ")";
 
         db.execSQL(CREATE_TABLE);
@@ -54,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     public boolean insertItem(String postType, String category, String name,
                               String phone, String description, String date,
-                              String location, String imageUri, String timestamp) {
+                              String location, String imageUri, String timestamp, double latitude, double longitude) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -69,6 +73,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_LOCATION, location);
         values.put(COL_IMAGE, imageUri);
         values.put(COL_TIMESTAMP, timestamp);
+        values.put(COL_LATITUDE, latitude);
+        values.put(COL_LONGITUDE, longitude);
 
         long result = db.insert(TABLE_NAME, null, values);
 
@@ -93,8 +99,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String location = cursor.getString(cursor.getColumnIndexOrThrow("location"));
                 String image = cursor.getString(cursor.getColumnIndexOrThrow("imageUri"));
                 String timestamp = cursor.getString(cursor.getColumnIndexOrThrow("timestamp"));
+                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LATITUDE));
+                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LONGITUDE));
 
-                list.add(new Item(id, type, category, name, phone, desc, date, location, image, timestamp));
+                list.add(new Item(id, type, category, name, phone, desc, date, location, image, timestamp, latitude, longitude));
 
             } while (cursor.moveToNext());
         }
